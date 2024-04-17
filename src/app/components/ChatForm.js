@@ -4,10 +4,12 @@ import { useRef, useState } from "react";
 const ChatForm = () => {
   const [results, setResults] = useState([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
 
   const processFiles = async (event) => {
     setError("");
+    setLoading(true);
 
     const formData = new FormData();
     for (const file of event.target.files) {
@@ -24,6 +26,7 @@ const ChatForm = () => {
         const errorData = await response.json();
         setError(errorData.error || "An unknown error occurred");
         setResults([]);
+        setLoading(false);
         return;
       }
 
@@ -36,6 +39,8 @@ const ChatForm = () => {
       console.error("Error processing files:", error);
       setError("An error occurred while processing files.");
     }
+
+    setLoading(false);
   };
 
   const handleButtonClick = () => {
@@ -60,6 +65,7 @@ const ChatForm = () => {
         Upload
       </button>
 
+      {loading && <p>Please wait...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
       <div className="flex flex-col lg:flex-row items-center justify-center gap-6 w-full">
